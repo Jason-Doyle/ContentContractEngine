@@ -1,0 +1,5 @@
+dist/
+coverage/
+node_modules/
+examples/**/rendered/
+package-lock.json

@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a focused deterministic capability
+title: '[Feature]: '
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description:
+        Describe the content reliability problem without prescribing a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: current-workaround
+    attributes:
+      label: Current workaround
+      description: Explain how the problem is handled today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-behavior
+    attributes:
+      label: Proposed deterministic behavior
+      description: Describe inputs, outputs, findings, and failure semantics.
+    validations:
+      required: true
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Project principles
+      options:
+        - label: The proposal remains useful without a hosted service.
+          required: true
+        - label: AI may propose changes but does not decide pass or fail.
+          required: true
+        - label: The proposal does not require source files to be mutated.
+          required: true

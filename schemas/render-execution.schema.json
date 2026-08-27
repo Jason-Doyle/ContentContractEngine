@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/main/schemas/render-execution.schema.json",
+  "title": "Content Contract Engine render execution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "verification", "render"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "verification": {
+      "$ref": "verification-result.schema.json"
+    },
+    "render": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/renderResult"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "renderResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outputDirectory", "files", "removedFiles"],
+      "properties": {
+        "outputDirectory": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "removedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "../../schemas/content-contract.config.schema.json",
+  "version": 1,
+  "sources": [
+    {
+      "id": "docs",
+      "include": ["content/**/*.{md,mdx}"],
+      "frontmatterSchema": "content/schemas/docs.schema.json"
+    }
+  ],
+  "facts": {
+    "file": "content/facts.yaml"
+  },
+  "freshness": {
+    "warningDays": 30,
+    "reviewByField": "reviewBy",
+    "expiresField": "expires"
+  },
+  "render": {
+    "outputDirectory": "rendered"
+  },
+  "gate": {
+    "failOn": "error"
+  }
+}
