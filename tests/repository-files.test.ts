@@ -48,8 +48,8 @@ describe('repository setup files', () => {
       'utf8',
     );
 
-    expect(workflow).toMatch(/actions\/checkout@[0-9a-f]{40}\s+# v4/u);
-    expect(workflow).toMatch(/actions\/setup-node@[0-9a-f]{40}\s+# v4/u);
+    expect(workflow).toMatch(/actions\/checkout@[0-9a-f]{40}\s+# v7\.0\.1/u);
+    expect(workflow).toMatch(/actions\/setup-node@[0-9a-f]{40}\s+# v7\.0\.0/u);
     expect(workflow).toContain('- 22');
     expect(workflow).toContain('- 24');
     expect(workflow).toContain('- ubuntu-latest');

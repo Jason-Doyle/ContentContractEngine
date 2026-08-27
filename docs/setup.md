@@ -9,6 +9,11 @@
 Repository CI is configured to run the full quality suite on Node.js 22 and 24
 across Windows and Ubuntu.
 
+The project uses TypeScript 7's native compiler for `tsc`. The TypeScript 6
+compatibility package remains installed under the `typescript` dependency name
+because `typescript-eslint` still consumes the compiler API that TypeScript 7
+does not expose.
+
 ## Install dependencies
 
 ```powershell

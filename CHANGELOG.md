@@ -16,3 +16,6 @@ All notable changes will be documented in this file.
 - Complete CLI and security-model documentation.
 - Repository documentation is validated by the engine itself.
 - CLI positional arguments and fact-date failures use documented stable errors.
+- TypeScript 7 native compiler with the TypeScript 6 compatibility API for
+  ESLint tooling.
+- GitHub Actions checkout 7.0.1 and setup-node 7.0.0.
