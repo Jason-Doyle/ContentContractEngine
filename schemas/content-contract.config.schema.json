@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/main/schemas/content-contract.config.schema.json",
+  "title": "Content Contract Engine configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "sources"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "include"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "include": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "exclude": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "default": []
+          },
+          "frontmatterSchema": {
+            "type": "string",
+            "minLength": 1
+          },
+          "allowEmpty": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "warningDays": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 30
+        },
+        "reviewByField": {
+          "type": "string",
+          "minLength": 1,
+          "default": "reviewBy"
+        },
+        "expiresField": {
+          "type": "string",
+          "minLength": 1,
+          "default": "expires"
+        }
+      }
+    },
+    "render": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outputDirectory"],
+      "properties": {
+        "outputDirectory": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "failOn": {
+          "enum": ["error", "warning", "never"],
+          "default": "error"
+        }
+      }
+    }
+  }
+}

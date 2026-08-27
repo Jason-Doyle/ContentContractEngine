@@ -1,0 +1,25 @@
+{
+  "$schema": "./schemas/content-contract.config.schema.json",
+  "version": 1,
+  "sources": [
+    {
+      "id": "project-docs",
+      "include": [
+        "README.md",
+        "AGENTS.md",
+        "CHANGELOG.md",
+        "CODE_OF_CONDUCT.md",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        "SUPPORT.md",
+        "docs/**/*.md"
+      ]
+    }
+  ],
+  "render": {
+    "outputDirectory": ".content-contract/project-docs"
+  },
+  "gate": {
+    "failOn": "error"
+  }
+}
