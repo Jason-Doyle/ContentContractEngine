@@ -5,6 +5,11 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    groups:
+      vitest:
+        patterns:
+          - vitest
+          - "@vitest/coverage-v8"
     open-pull-requests-limit: 5
     labels:
       - dependencies
