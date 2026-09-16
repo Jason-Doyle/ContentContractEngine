@@ -9,7 +9,7 @@ updates:
       vitest:
         patterns:
           - vitest
-          - "@vitest/coverage-v8"
+          - '@vitest/coverage-v8'
     open-pull-requests-limit: 5
     labels:
       - dependencies
