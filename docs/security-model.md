@@ -17,6 +17,7 @@ built-in verifier's no-network and no-mutation guarantees.
 - Markdown and MDX source text
 - YAML frontmatter
 - Fact catalogs
+- Baseline files
 - Linked local documents
 - Existing render manifests
 
@@ -35,6 +36,7 @@ These inputs are parsed as data and are never executed.
   manifest.
 - External links are not fetched.
 - Built-in diagnostics do not include canonical fact values.
+- Baseline writes reject paths outside the project and symbolic-link traversal.
 
 ## Important limitations
 
@@ -50,6 +52,9 @@ These inputs are parsed as data and are never executed.
 - External URL validity, remote source authenticity, and fact correctness are
   not verified.
 - Custom validators can perform arbitrary I/O because they are trusted code.
+- A reviewed baseline can suppress known findings from `verify`. Configuration
+  and baseline changes can therefore weaken a release gate. Rendering ignores
+  baseline suppression and still blocks every raw error.
 
 Security reports should describe the attacker capability, affected path, and a
 minimal reproduction without including private content.

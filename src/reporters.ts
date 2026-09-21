@@ -1,4 +1,5 @@
 import type {
+  BaselineResult,
   Finding,
   InitResult,
   RenderResult,
@@ -19,9 +20,13 @@ export function formatVerification(result: VerificationResult): string {
   }
 
   lines.push(
-    `${result.passed ? 'PASS' : 'FAIL'}: ${result.counts.files} file(s), ${result.counts.facts} fact(s), ${result.counts.errors} error(s), ${result.counts.warnings} warning(s), ${result.counts.infos} info message(s).`,
+    `${result.passed ? 'PASS' : 'FAIL'}: ${result.counts.files} file(s), ${result.counts.facts} fact(s), ${result.counts.errors} error(s), ${result.counts.warnings} warning(s), ${result.counts.infos} info message(s), ${result.counts.baselined} baselined finding(s).`,
   );
   return lines.join('\n');
+}
+
+export function formatBaseline(result: BaselineResult): string {
+  return `Wrote ${result.entries} finding(s) to ${result.file}.`;
 }
 
 export function formatFinding(finding: Finding): string {

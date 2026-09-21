@@ -7,6 +7,7 @@ import { ContentContractError, errorMessage } from './errors.js';
 import { initializeProject } from './init.js';
 import { render } from './render.js';
 import {
+  formatBaseline,
   formatInit,
   formatJson,
   formatRender,
@@ -14,7 +15,7 @@ import {
   formatVerification,
 } from './reporters.js';
 import { findRule } from './rules.js';
-import { verify } from './verify.js';
+import { createBaseline, verify } from './verify.js';
 import { version } from './version.js';
 
 export { version };
@@ -53,6 +54,8 @@ export async function main(
         return await runInit(commandArgs, io);
       case 'verify':
         return await runVerify(commandArgs, io);
+      case 'baseline':
+        return await runBaseline(commandArgs, io);
       case 'render':
         return await runRender(commandArgs, io);
       case 'explain':
@@ -85,6 +88,9 @@ async function runInit(args: string[], io: CliIo): Promise<number> {
         type: 'string',
         default: 'pretty',
       },
+      source: {
+        type: 'string',
+      },
     },
   });
   if (parsed.positionals.length > 1) {
@@ -95,8 +101,41 @@ async function runInit(args: string[], io: CliIo): Promise<number> {
   }
   const directory = parsed.positionals[0] ?? '.';
   const format = parseFormat(parsed.values.format);
-  const result = await initializeProject(directory, parsed.values.force);
+  const result = await initializeProject(directory, {
+    force: parsed.values.force,
+    ...(parsed.values.source !== undefined
+      ? { source: parsed.values.source }
+      : {}),
+  });
   io.stdout(format === 'json' ? formatJson(result) : formatInit(result));
+  return 0;
+}
+
+async function runBaseline(args: string[], io: CliIo): Promise<number> {
+  const parsed = parseArgs({
+    args,
+    allowPositionals: false,
+    strict: true,
+    options: {
+      config: {
+        type: 'string',
+        short: 'c',
+      },
+      format: {
+        type: 'string',
+        default: 'pretty',
+      },
+      now: {
+        type: 'string',
+      },
+    },
+  });
+  const format = parseFormat(parsed.values.format);
+  const now = parseNow(parsed.values.now);
+  const result = await createBaseline(parsed.values.config, {
+    ...(now ? { now } : {}),
+  });
+  io.stdout(format === 'json' ? formatJson(result) : formatBaseline(result));
   return 0;
 }
 
@@ -280,9 +319,12 @@ function helpText(): string {
     'Content Contract Engine',
     '',
     'Usage:',
-    '  content-contract init [directory] [--force] [--format pretty|json]',
+    '  content-contract init [directory] [--source glob] [--force]',
+    '                        [--format pretty|json]',
     '  content-contract verify [-c path] [--fail-on error|warning|never]',
     '                          [--now YYYY-MM-DD] [--format pretty|json]',
+    '  content-contract baseline [-c path] [--now YYYY-MM-DD]',
+    '                            [--format pretty|json]',
     '  content-contract render [-c path] [--fail-on error|warning]',
     '                          [--now YYYY-MM-DD]',
     '                          [--format pretty|json]',

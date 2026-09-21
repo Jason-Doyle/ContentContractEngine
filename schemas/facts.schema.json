@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/main/schemas/facts.schema.json",
+  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/v0.1.0/schemas/facts.schema.json",
   "title": "Content Contract Engine facts",
   "type": "object",
   "additionalProperties": false,

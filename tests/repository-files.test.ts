@@ -28,31 +28,45 @@ describe('repository setup files', () => {
     }
   });
 
-  it('publishes repository metadata without enabling npm publication', async () => {
+  it('publishes complete repository and npm metadata', async () => {
     const metadata = JSON.parse(
       await readFile(path.join(projectRoot, 'package.json'), 'utf8'),
     ) as unknown;
     expect(metadata).toMatchObject({
       name: 'content-contract-engine',
-      private: true,
+      publishConfig: {
+        access: 'public',
+      },
       repository: {
         type: 'git',
         url: 'git+https://github.com/Jason-Doyle/ContentContractEngine.git',
       },
+      exports: {
+        './schemas/baseline.schema.json': './schemas/baseline.schema.json',
+      },
     });
+    expect(metadata).not.toMatchObject({ private: true });
   });
 
   it('pins GitHub Actions to immutable commit hashes', async () => {
-    const workflow = await readFile(
-      path.join(projectRoot, '.github', 'workflows', 'ci.yml'),
-      'utf8',
+    const workflowPaths = await fg('.github/workflows/*.{yml,yaml}', {
+      cwd: projectRoot,
+      absolute: true,
+      onlyFiles: true,
+    });
+    const workflows = await Promise.all(
+      workflowPaths.map((file) => readFile(file, 'utf8')),
     );
+    const combined = workflows.join('\n');
 
-    expect(workflow).toMatch(/actions\/checkout@[0-9a-f]{40}\s+# v7\.0\.1/u);
-    expect(workflow).toMatch(/actions\/setup-node@[0-9a-f]{40}\s+# v7\.0\.0/u);
-    expect(workflow).toContain('- 22');
-    expect(workflow).toContain('- 24');
-    expect(workflow).toContain('- ubuntu-latest');
-    expect(workflow).toContain('- windows-latest');
+    expect(combined).not.toMatch(/\buses:\s+[^@\s]+@(?![0-9a-f]{40}\b)/u);
+    expect(combined).toMatch(/actions\/checkout@[0-9a-f]{40}\s+# v7\.0\.1/u);
+    expect(combined).toMatch(/actions\/setup-node@[0-9a-f]{40}\s+# v7\.0\.0/u);
+    expect(combined).toContain('- 22');
+    expect(combined).toContain('- 24');
+    expect(combined).toContain('- ubuntu-latest');
+    expect(combined).toContain('- windows-latest');
+    expect(combined).toContain('name: CI');
+    expect(combined).toContain('id-token: write');
   });
 });

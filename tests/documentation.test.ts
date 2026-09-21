@@ -45,6 +45,7 @@ describe('documentation contracts', () => {
     for (const requiredText of [
       'content-contract init',
       'content-contract verify',
+      'content-contract baseline',
       'content-contract render',
       'content-contract explain',
       '--fail-on error|warning|never',
@@ -66,10 +67,14 @@ describe('documentation contracts', () => {
     const combined = documents.join('\n');
 
     expect(combined).not.toContain('npm install\n');
+    expect(combined).not.toContain('The package has not been published');
     expect(combined).not.toContain('has not been initialized');
     expect(combined).not.toContain('content-contract-engine-local');
     expect(combined).toContain(
       'https://github.com/Jason-Doyle/ContentContractEngine',
+    );
+    expect(combined).toContain(
+      'npm install --save-dev content-contract-engine',
     );
   });
 });

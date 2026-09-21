@@ -40,10 +40,14 @@ export async function render(
 ): Promise<RenderExecution> {
   const project = await loadProject(configPath);
   const requestedThreshold = options.failOn ?? project.config.gate.failOn;
-  const verification = await verifyProject(project, {
-    ...options,
-    failOn: requestedThreshold === 'warning' ? 'warning' : 'error',
-  });
+  const verification = await verifyProject(
+    project,
+    {
+      ...options,
+      failOn: requestedThreshold === 'warning' ? 'warning' : 'error',
+    },
+    false,
+  );
   if (!verification.passed) {
     return { schemaVersion: 1, verification, render: null };
   }

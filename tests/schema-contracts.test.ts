@@ -3,7 +3,12 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 
-import { ContentContractError, render, verify } from '../src/index.js';
+import {
+  ContentContractError,
+  createBaseline,
+  render,
+  verify,
+} from '../src/index.js';
 import {
   compileSchema,
   compileSchemaWithReferences,
@@ -87,6 +92,7 @@ describe('published schemas', () => {
     const execution = await render(configPath, {
       now: new Date('2026-08-27T00:00:00.000Z'),
     });
+
     const verificationSchema = await readJsonFile(
       path.join(projectRoot, 'schemas', 'verification-result.schema.json'),
     );
@@ -104,6 +110,56 @@ describe('published schemas', () => {
     );
 
     expect(validate(execution), formatSchemaErrors(validate.errors)).toBe(true);
+  });
+
+  it('validates baseline files and uses immutable schema identities', async () => {
+    const root = await createTemporaryProject();
+    const configPath = await createValidProject(
+      root,
+      '---\ntitle: Home\n---\n\n# Home\n\n[Missing](missing.md)\n',
+    );
+    const config = (await readJsonFile(configPath)) as Record<string, unknown>;
+    config.baseline = { file: '.content-contract-baseline.json' };
+    await writeProjectFile(
+      root,
+      'content-contract.config.json',
+      `${JSON.stringify(config, null, 2)}\n`,
+    );
+    await createBaseline(configPath, {
+      now: new Date('2026-08-27T00:00:00.000Z'),
+    });
+
+    const baselineSchema = compileSchema(
+      await readJsonFile(
+        path.join(projectRoot, 'schemas', 'baseline.schema.json'),
+      ),
+      'baseline schema',
+    );
+    const baseline = await readJsonFile(
+      path.join(root, '.content-contract-baseline.json'),
+    );
+    expect(
+      baselineSchema(baseline),
+      formatSchemaErrors(baselineSchema.errors),
+    ).toBe(true);
+
+    const packageMetadata = (await readJsonFile(
+      path.join(projectRoot, 'package.json'),
+    )) as { version: string };
+    for (const name of [
+      'baseline.schema.json',
+      'content-contract.config.schema.json',
+      'facts.schema.json',
+      'render-execution.schema.json',
+      'verification-result.schema.json',
+    ]) {
+      const schema = (await readJsonFile(
+        path.join(projectRoot, 'schemas', name),
+      )) as { $id: string };
+      expect(schema.$id).toBe(
+        `https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/v${packageMetadata.version}/schemas/${name}`,
+      );
+    }
   });
 
   it('surfaces malformed JSON and malformed schemas explicitly', async () => {

@@ -26,6 +26,8 @@ text. Agents do not need to scrape terminal prose or infer which rule failed.
 - Do not let an agent suppress a rule without human review.
 - Review changes to configuration, source globs, schemas, and `failOn`; an agent
   can otherwise weaken what is being checked.
+- Review every baseline change. Do not let an agent refresh a baseline merely to
+  make a failing check pass.
 - Do not let an agent replace canonical facts with guessed values.
 - Keep fact sources and owners in the fact catalog.
 - Keep model calls outside the validator process.

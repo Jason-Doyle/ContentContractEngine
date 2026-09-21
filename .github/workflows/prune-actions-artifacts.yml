@@ -2,7 +2,7 @@ name: Prune Actions artifacts
 
 on:
   schedule:
-    - cron: "17 4 * * *"
+    - cron: '17 4 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -24,8 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      RETENTION_DAYS: "5"
-      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      RETENTION_DAYS: '5'
+      DRY_RUN:
+        ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false
+        }}
     steps:
       - name: Keep recent and latest successful artifacts
         env:

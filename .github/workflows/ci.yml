@@ -43,3 +43,19 @@ jobs:
 
       - name: Run project QA
         run: npm run qa
+
+  required:
+    name: CI
+    if: always()
+    needs:
+      - qa
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every QA job
+        env:
+          QA_RESULT: ${{ needs.qa.result }}
+        run: |
+          if [ "$QA_RESULT" != "success" ]; then
+            echo "One or more QA jobs did not pass."
+            exit 1
+          fi

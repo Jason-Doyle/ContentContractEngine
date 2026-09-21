@@ -8,6 +8,30 @@ rejected so misspellings cannot silently disable validation.
 A source that matches no files fails unless it explicitly sets
 `allowEmpty: true`.
 
+## Baselines
+
+A baseline file stores the exact current findings that may pass `verify`.
+Matching uses:
+
+- rule ID;
+- project-relative file;
+- complete source location when present;
+- message.
+
+Entries are counted, so one baseline entry suppresses one identical finding.
+Stale baseline entries are ignored. A moved, changed, or additional finding is
+reported normally and still affects the gate.
+
+`content-contract baseline` replaces the configured file with all current
+findings before baseline suppression. Baseline files are sorted because the
+underlying findings are sorted.
+
+Baselines apply only to `verify`. `render` evaluates every finding and always
+blocks raw errors.
+
+The baseline destination cannot overwrite configuration, schemas, facts, source
+documents, or files beneath the render output directory.
+
 ## Frontmatter
 
 Each content source may reference a JSON Schema. Document frontmatter is
@@ -25,7 +49,7 @@ facts:
     value: v1
     owner: platform
     source: docs/architecture.md
-    reviewBy: 2099-01-01
+    reviewBy: 2027-03-20
 ```
 
 Documents reference facts explicitly:
@@ -97,8 +121,13 @@ Every finding includes:
 - source location when one exists;
 - concise message and remediation guidance.
 
+Verification counts include `baselined`, which is the number of findings
+suppressed by the configured baseline.
+
 The JSON result contract is versioned independently of the package under
 `schemas/verification-result.schema.json`.
+
+The baseline file contract is under `schemas/baseline.schema.json`.
 
 `render --format json` uses `schemas/render-execution.schema.json`. Managed
 renders also write a manifest inside the output directory so documents removed

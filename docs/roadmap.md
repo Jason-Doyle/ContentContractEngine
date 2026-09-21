@@ -9,15 +9,17 @@
 - Review and expiry dates
 - Stable terminal and JSON findings
 - Library extension API
+- Baseline files for accepting existing debt while blocking regressions
+- Existing-repository initialization
 
 ## Candidate follow-up work
 
-- Baseline files that permit existing debt while blocking regressions
 - HTML source support
 - Fact source adapters that propose catalog updates without editing prose
 - Cached external-link validation
 - Static accessibility and metadata validators
 - Framework adapters for Astro and other static-site generators
+- GitHub annotations or SARIF output
 - MCP wrapper for agent-driven repair workflows
 
 ## Explicit non-goals

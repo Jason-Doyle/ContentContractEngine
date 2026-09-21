@@ -1,7 +1,9 @@
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { loadProject, renderProject, verify } from '../src/index.js';
+import { verify } from '../src/index.js';
+import { loadProject } from '../src/project.js';
+import { renderProject } from '../src/render.js';
 import {
   baseConfig,
   createTemporaryProject,

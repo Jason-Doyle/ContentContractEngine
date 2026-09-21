@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -22,6 +22,11 @@ const temporaryDirectory = await mkdtemp(
 let packagePath;
 
 try {
+  await writeFile(
+    path.join(temporaryDirectory, 'package.json'),
+    `${JSON.stringify({ private: true, type: 'module' }, null, 2)}\n`,
+    'utf8',
+  );
   const packed = runNode([npmCli, 'pack', '--json'], projectRoot, 'npm pack');
   const packResult = JSON.parse(packed.stdout);
   const filename = packResult[0]?.filename;
@@ -61,6 +66,75 @@ try {
       '2026-08-27',
     ],
     'installed verify',
+  );
+
+  await writeFile(
+    path.join(temporaryDirectory, 'consumer.mjs'),
+    [
+      "import { findRule, rules } from 'content-contract-engine';",
+      '',
+      "if (findRule('CCE002') !== rules.linkTargetMissing) {",
+      "  throw new Error('Installed library exports are unavailable.');",
+      '}',
+      '',
+    ].join('\n'),
+    'utf8',
+  );
+  runNode(
+    [path.join(temporaryDirectory, 'consumer.mjs')],
+    temporaryDirectory,
+    'installed library import',
+  );
+
+  await writeFile(
+    path.join(temporaryDirectory, 'consumer.ts'),
+    [
+      "import { verify, type ContentValidator, type VerificationResult } from 'content-contract-engine';",
+      '',
+      'const validator: ContentValidator = {',
+      "  name: 'consumer-validator',",
+      '  validate: () => [],',
+      '};',
+      'const result: Promise<VerificationResult> = verify(',
+      "  './content-contract.config.json',",
+      '  { validators: [validator] },',
+      ');',
+      'void result;',
+      '',
+    ].join('\n'),
+    'utf8',
+  );
+  await writeFile(
+    path.join(temporaryDirectory, 'tsconfig.json'),
+    `${JSON.stringify(
+      {
+        compilerOptions: {
+          module: 'NodeNext',
+          moduleResolution: 'NodeNext',
+          noEmit: true,
+          skipLibCheck: false,
+          strict: true,
+          target: 'ES2022',
+        },
+        include: ['consumer.ts'],
+      },
+      null,
+      2,
+    )}\n`,
+    'utf8',
+  );
+  runNode(
+    [
+      npmCli,
+      'exec',
+      '--offline',
+      '--',
+      'tsc',
+      '--project',
+      path.join(temporaryDirectory, 'tsconfig.json'),
+    ],
+    projectRoot,
+    'installed TypeScript declarations',
   );
 } finally {
   if (packagePath) {

@@ -1,10 +1,18 @@
 # Security Policy
 
+## Supported versions
+
+Security fixes are applied to the latest published `0.1.x` release.
+
 ## Reporting
 
 Do not publish suspected vulnerabilities before maintainers have had a
 reasonable opportunity to investigate. Report them through a
 [private GitHub security advisory](https://github.com/Jason-Doyle/ContentContractEngine/security/advisories/new).
+
+Include the affected version, attacker capability, impact, and a minimal
+reproduction. Do not include credentials, private documents, or unrelated
+personal data.
 
 ## Security boundaries
 
