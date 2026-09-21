@@ -20,6 +20,7 @@ const failedResult: VerificationResult = {
     errors: 1,
     warnings: 0,
     infos: 0,
+    baselined: 0,
   },
   findings: [
     {

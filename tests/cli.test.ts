@@ -1,8 +1,13 @@
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { main, type CliIo } from '../src/cli.js';
-import { createTemporaryProject, createValidProject } from './helpers.js';
+import {
+  createTemporaryProject,
+  createValidProject,
+  writeProjectFile,
+} from './helpers.js';
 
 function captureIo(): {
   io: CliIo;
@@ -28,6 +33,7 @@ describe('CLI', () => {
 
     expect(await main(['--help'], help.io)).toBe(0);
     expect(help.stdout.join('')).toContain('content-contract verify');
+    expect(help.stdout.join('')).toContain('content-contract baseline');
     expect(await main(['--version'], version.io)).toBe(0);
     expect(version.stdout.join('')).toContain('0.1.0');
   });
@@ -154,6 +160,47 @@ describe('CLI', () => {
     expect(rendered.stdout.join('')).toContain('Rendered 2 file(s)');
   });
 
+  it('initializes an existing source and creates its baseline', async () => {
+    const root = await createTemporaryProject();
+    const initialized = captureIo();
+    const baselined = captureIo();
+    await writeProjectFile(
+      root,
+      'docs/index.md',
+      '# Home\n\n[Missing](no.md)\n',
+    );
+
+    expect(
+      await main(
+        ['init', root, '--source', 'docs/**/*.{md,mdx}'],
+        initialized.io,
+      ),
+    ).toBe(0);
+    expect(initialized.stdout.join('')).toContain(
+      '.content-contract-baseline.json',
+    );
+    expect(
+      await main(
+        [
+          'baseline',
+          '--config',
+          path.join(root, 'content-contract.config.json'),
+          '--now',
+          '2026-08-27',
+        ],
+        baselined.io,
+      ),
+    ).toBe(0);
+    expect(baselined.stdout.join('')).toContain('Wrote 1 finding(s)');
+    const baseline = JSON.parse(
+      await readFile(
+        path.join(root, '.content-contract-baseline.json'),
+        'utf8',
+      ),
+    ) as { findings: unknown[] };
+    expect(baseline.findings).toHaveLength(1);
+  });
+
   it('reports invalid formats, thresholds, and rule requests', async () => {
     const badFormat = captureIo();
     const badInitFormat = captureIo();
@@ -169,6 +216,12 @@ describe('CLI', () => {
       await main(['init', initRoot, '--format', 'xml'], badInitFormat.io),
     ).toBe(2);
     expect(badInitFormat.stderr.join('')).toContain('FORMAT_INVALID');
+    const emptySource = captureIo();
+    const emptySourceRoot = await createTemporaryProject();
+    expect(
+      await main(['init', emptySourceRoot, '--source', ''], emptySource.io),
+    ).toBe(2);
+    expect(emptySource.stderr.join('')).toContain('INIT_SOURCE_INVALID');
     expect(
       await main(['verify', '--fail-on', 'critical'], badThreshold.io),
     ).toBe(2);

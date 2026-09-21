@@ -4,9 +4,9 @@ facts:
     value: v1
     owner: maintainers
     source: content-contract.config.json
-    reviewBy: 2099-01-01
+    reviewBy: 2027-03-20
   supported_format:
     value: Markdown and MDX
     owner: maintainers
     source: README.md
-    reviewBy: 2099-01-01
+    reviewBy: 2027-03-20

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/main/schemas/verification-result.schema.json",
+  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/v0.1.0/schemas/verification-result.schema.json",
   "title": "Content Contract Engine verification result",
   "type": "object",
   "additionalProperties": false,
@@ -18,7 +18,14 @@
     "counts": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["files", "facts", "errors", "warnings", "infos"],
+      "required": [
+        "files",
+        "facts",
+        "errors",
+        "warnings",
+        "infos",
+        "baselined"
+      ],
       "properties": {
         "files": {
           "type": "integer",
@@ -37,6 +44,10 @@
           "minimum": 0
         },
         "infos": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "baselined": {
           "type": "integer",
           "minimum": 0
         }

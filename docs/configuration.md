@@ -17,6 +17,9 @@ The initial structure is:
       "allowEmpty": false
     }
   ],
+  "baseline": {
+    "file": ".content-contract-baseline.json"
+  },
   "facts": {
     "file": "content/facts.yaml"
   },
@@ -37,6 +40,11 @@ The initial structure is:
 Canonical facts use explicit references such as `{{fact:api_version}}`. Explicit
 references avoid using an AI classifier as the release gate.
 
+A baseline is optional. It records exact findings that are accepted as existing
+debt. Run `content-contract baseline` only after reviewing the current result.
+The file should normally be committed so CI and local verification use the same
+accepted set.
+
 Sources fail when they match no files unless `allowEmpty` is explicitly true.
 This prevents misspelled globs from producing a false successful release.
 
@@ -56,13 +64,15 @@ settings are described in [contracts.md](contracts.md).
 | Configuration path        | `content-contract.config.json` in the current directory |
 | `source.exclude`          | Empty                                                   |
 | `source.allowEmpty`       | `false`                                                 |
+| `baseline`                | Disabled                                                |
 | `freshness.warningDays`   | `30`                                                    |
 | `freshness.reviewByField` | `reviewBy`                                              |
 | `freshness.expiresField`  | `expires`                                               |
 | `render.outputDirectory`  | `.content-contract/rendered`                            |
 | `gate.failOn`             | `error`                                                 |
 
-`facts`, `freshness`, `render`, and `gate` are optional configuration sections.
+`baseline`, `facts`, `freshness`, `render`, and `gate` are optional
+configuration sections.
 
 ## Path and source behavior
 
@@ -70,5 +80,10 @@ settings are described in [contracts.md](contracts.md).
 - A document may match only one source.
 - Included files must be Markdown or MDX.
 - Schema, fact, and output paths must remain inside the configuration directory.
+- The baseline path must remain inside the configuration directory.
 - Root-relative content links resolve from the configuration directory, not a
   website routing base.
+
+The published schemas use immutable release-tag URLs. Package consumers may also
+import the JSON files through subpaths such as
+`content-contract-engine/schemas/content-contract.config.schema.json`.

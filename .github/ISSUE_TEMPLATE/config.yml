@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Support and questions
+    url: https://github.com/Jason-Doyle/ContentContractEngine/discussions
+    about: Ask setup and usage questions
   - name: Security vulnerability
     url: https://github.com/Jason-Doyle/ContentContractEngine/security/advisories/new
     about: Report security issues privately
+  - name: Private conduct report
+    url: https://github.com/Jason-Doyle/ContentContractEngine/security/advisories/new
+    about: Begin the private report title with Conduct report

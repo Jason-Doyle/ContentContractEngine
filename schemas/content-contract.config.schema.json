@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/main/schemas/content-contract.config.schema.json",
+  "$id": "https://raw.githubusercontent.com/Jason-Doyle/ContentContractEngine/v0.1.0/schemas/content-contract.config.schema.json",
   "title": "Content Contract Engine configuration",
   "type": "object",
   "additionalProperties": false,
@@ -49,6 +49,17 @@
             "type": "boolean",
             "default": false
           }
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },

@@ -39,6 +39,7 @@ const required = [
   'dist/index.d.ts',
   'dist/index.js',
   'src/index.ts',
+  'schemas/baseline.schema.json',
   'schemas/content-contract.config.schema.json',
   'schemas/facts.schema.json',
   'schemas/render-execution.schema.json',
@@ -49,6 +50,20 @@ const required = [
 for (const requiredPath of required) {
   if (!files.has(requiredPath)) {
     throw new Error(`Package is missing ${requiredPath}.`);
+  }
+
+  if (packageMetadata.private === true) {
+    throw new Error('Package is still marked private.');
+  }
+  for (const [subpath, target] of Object.entries(
+    packageMetadata.exports ?? {},
+  )) {
+    if (
+      subpath.startsWith('./schemas/') &&
+      (typeof target !== 'string' || !files.has(target.replace(/^\.\//u, '')))
+    ) {
+      throw new Error(`Package export ${subpath} points to a missing file.`);
+    }
   }
 }
 

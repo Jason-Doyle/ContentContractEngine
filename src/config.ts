@@ -73,6 +73,9 @@ export async function loadProjectConfig(
   const factsFilePath = config.facts
     ? resolveInside(rootDirectory, config.facts.file, 'Facts file')
     : null;
+  const baselineFilePath = config.baseline
+    ? resolveInside(rootDirectory, config.baseline.file, 'Baseline file')
+    : null;
 
   const outputDirectory = resolveInside(
     rootDirectory,
@@ -90,6 +93,7 @@ export async function loadProjectConfig(
     rootDirectory,
     configPath,
     sources,
+    baselineFilePath,
     factsFilePath,
     freshness: {
       warningDays: config.freshness?.warningDays ?? 30,

@@ -1,4 +1,5 @@
 import type {
+  BaselineResult,
   ContentProject,
   FailureThreshold,
   Finding,
@@ -6,6 +7,7 @@ import type {
   VerificationOptions,
   VerificationResult,
 } from './types.js';
+import { applyBaseline, loadBaseline, writeBaseline } from './baseline.js';
 import { loadProject } from './project.js';
 import { validateFactReferences } from './validators/facts.js';
 import { validateFreshness } from './validators/freshness.js';
@@ -26,24 +28,24 @@ export async function verify(
   return verifyProject(project, options);
 }
 
+export async function createBaseline(
+  configPath?: string,
+  options: VerificationOptions = {},
+): Promise<BaselineResult> {
+  const project = await loadProject(configPath);
+  const findings = await collectFindings(project, options);
+  return writeBaseline(project, findings);
+}
+
 export async function verifyProject(
   project: ContentProject,
   options: VerificationOptions = {},
+  useBaseline = true,
 ): Promise<VerificationResult> {
-  const now = options.now ?? new Date();
   const failOn = options.failOn ?? project.config.gate.failOn;
-  const customFindings = await Promise.all(
-    (options.validators ?? []).map((validator) =>
-      Promise.resolve(validator.validate({ project, now })),
-    ),
-  );
-  const findings = sortFindings([
-    ...validateFrontmatter(project),
-    ...(await validateLinks(project)),
-    ...validateFactReferences(project),
-    ...validateFreshness(project, now),
-    ...customFindings.flat(),
-  ]);
+  const rawFindings = await collectFindings(project, options);
+  const baseline = useBaseline ? await loadBaseline(project.config) : [];
+  const { findings, suppressed } = applyBaseline(rawFindings, baseline);
   const counts = {
     files: project.documents.length,
     facts: Object.keys(project.facts.facts).length,
@@ -51,6 +53,7 @@ export async function verifyProject(
     warnings: findings.filter((finding) => finding.severity === 'warning')
       .length,
     infos: findings.filter((finding) => finding.severity === 'info').length,
+    baselined: suppressed,
   };
 
   return {
@@ -60,6 +63,25 @@ export async function verifyProject(
     counts,
     findings,
   };
+}
+
+async function collectFindings(
+  project: ContentProject,
+  options: VerificationOptions,
+): Promise<Finding[]> {
+  const now = options.now ?? new Date();
+  const customFindings = await Promise.all(
+    (options.validators ?? []).map((validator) =>
+      Promise.resolve(validator.validate({ project, now })),
+    ),
+  );
+  return sortFindings([
+    ...validateFrontmatter(project),
+    ...(await validateLinks(project)),
+    ...validateFactReferences(project),
+    ...validateFreshness(project, now),
+    ...customFindings.flat(),
+  ]);
 }
 
 export function meetsFailureThreshold(

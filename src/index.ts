@@ -1,15 +1,12 @@
-export { ContentContractError, errorMessage } from './errors.js';
+export { ContentContractError } from './errors.js';
 export { initializeProject } from './init.js';
-export { loadProject } from './project.js';
-export { render, renderProject } from './render.js';
-export { findRule, rules, rulesById, rulesByName } from './rules.js';
-export {
-  meetsFailureThreshold,
-  sortFindings,
-  verify,
-  verifyProject,
-} from './verify.js';
+export { render } from './render.js';
+export { findRule, rules } from './rules.js';
+export { createBaseline, verify } from './verify.js';
 export type {
+  BaselineEntry,
+  BaselineFile,
+  BaselineResult,
   ContentDocument,
   ContentProject,
   ContentValidator,
@@ -21,12 +18,11 @@ export type {
   Finding,
   HeadingReference,
   InitResult,
+  InitOptions,
   LinkReference,
   ProjectConfig,
   RenderExecution,
   RenderResult,
-  ResolvedProjectConfig,
-  ResolvedSource,
   Severity,
   SourceConfig,
   SourceLocation,

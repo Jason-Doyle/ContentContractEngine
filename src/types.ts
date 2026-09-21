@@ -32,6 +32,9 @@ export interface ProjectConfig {
   $schema?: string;
   version: 1;
   sources: SourceConfig[];
+  baseline?: {
+    file: string;
+  };
   facts?: {
     file: string;
   };
@@ -61,6 +64,7 @@ export interface ResolvedProjectConfig {
   rootDirectory: string;
   configPath: string;
   sources: ResolvedSource[];
+  baselineFilePath: string | null;
   factsFilePath: string | null;
   freshness: {
     warningDays: number;
@@ -147,6 +151,7 @@ export interface VerificationCounts {
   errors: number;
   warnings: number;
   infos: number;
+  baselined: number;
 }
 
 export interface VerificationResult {
@@ -161,6 +166,24 @@ export interface VerificationOptions {
   now?: Date;
   failOn?: FailureThreshold;
   validators?: readonly ContentValidator[];
+}
+
+export interface BaselineEntry {
+  ruleId: string;
+  file: string;
+  location?: SourceLocation;
+  message: string;
+}
+
+export interface BaselineFile {
+  $schema?: string;
+  version: 1;
+  findings: BaselineEntry[];
+}
+
+export interface BaselineResult {
+  file: string;
+  entries: number;
 }
 
 export interface ValidatorContext {
@@ -190,4 +213,10 @@ export interface RenderExecution {
 export interface InitResult {
   directory: string;
   files: readonly string[];
+}
+
+export interface InitOptions {
+  force?: boolean;
+  now?: Date;
+  source?: string;
 }

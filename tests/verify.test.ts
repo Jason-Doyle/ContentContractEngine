@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  type ContentValidator,
-  verify,
-  verifyProject,
-  loadProject,
-} from '../src/index.js';
+import { type ContentValidator, verify } from '../src/index.js';
 import {
   createTemporaryProject,
   createValidProject,
@@ -28,6 +23,7 @@ describe('verification', () => {
       errors: 0,
       warnings: 0,
       infos: 0,
+      baselined: 0,
     });
   });
 
@@ -108,7 +104,6 @@ describe('verification', () => {
   it('sorts custom validator output with built-in findings', async () => {
     const root = await createTemporaryProject();
     const configPath = await createValidProject(root);
-    const project = await loadProject(configPath);
     const customValidator: ContentValidator = {
       name: 'custom',
       validate: () => [
@@ -131,7 +126,7 @@ describe('verification', () => {
       ],
     };
 
-    const result = await verifyProject(project, {
+    const result = await verify(configPath, {
       now: new Date('2026-08-27T00:00:00.000Z'),
       validators: [customValidator],
     });

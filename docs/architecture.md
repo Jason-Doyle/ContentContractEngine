@@ -7,9 +7,11 @@ agent-assisted repair.
 configuration
      |
      v
-file discovery -> parsing -> project index -> validators -> findings
-                                      |
-                                      +-> renderer -> separate output tree
+file discovery -> parsing -> project index -> validators -> sorted findings
+                                                      |
+                                                      +-> baseline -> verdict
+                                                      |
+                                                      +-> renderer -> separate output tree
 ```
 
 ## Core concepts
@@ -39,6 +41,13 @@ the engine cannot enforce those constraints on third-party code.
 A finding has a stable rule ID, severity, file path, optional source location,
 message, and remediation guidance. Findings are sorted before presentation.
 
+### Baseline
+
+A baseline is a reviewable snapshot of accepted findings. Verification removes
+only exact, counted matches before applying the failure threshold. Rendering
+does not apply the baseline because invalid source must not produce
+success-shaped output.
+
 ### Renderer
 
 The renderer resolves explicit canonical fact references into a separate output
@@ -50,12 +59,15 @@ and blocks writes through symbolic links.
 - Sources are sorted after discovery.
 - Validators return data rather than writing output directly.
 - Findings are sorted by file, location, severity, rule ID, and message.
+- Baseline files preserve that sorted order.
 - Built-in JSON reports contain no generated identifiers or timestamps.
 - The current date can be injected through the library or `--now`.
 
 ## Trust boundaries
 
 - Project configuration, schemas, and facts must resolve inside the project.
+- Baseline files must resolve inside the project and cannot be written through
+  symbolic links.
 - Symlinks cannot be used to read schemas or content outside the project.
 - Render paths cannot traverse symlinks or leave the configured output tree.
 - External links are not fetched in the initial release.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import path from 'node:path';
 
-import { loadProject } from '../src/index.js';
+import { loadProject } from '../src/project.js';
 import {
   baseConfig,
   createTemporaryProject,
@@ -72,6 +72,36 @@ describe('project configuration', () => {
       }),
     );
     await writeProjectFile(root, 'content/schema.json', frontmatterSchema);
+
+    await expect(
+      loadProject(path.join(root, 'content-contract.config.json')),
+    ).rejects.toMatchObject({
+      code: 'PATH_OUTSIDE_PROJECT',
+    });
+  });
+
+  it('rejects baseline files outside the project', async () => {
+    const root = await createTemporaryProject();
+    const config = JSON.parse(
+      baseConfig({
+        baseline: {
+          file: '../outside.json',
+        },
+      }),
+    ) as Record<string, unknown>;
+    config.sources = [
+      {
+        id: 'docs',
+        include: ['content/**/*.md'],
+        allowEmpty: true,
+      },
+    ];
+    delete config.facts;
+    await writeProjectFile(
+      root,
+      'content-contract.config.json',
+      `${JSON.stringify(config, null, 2)}\n`,
+    );
 
     await expect(
       loadProject(path.join(root, 'content-contract.config.json')),

@@ -16,13 +16,21 @@ does not expose.
 
 ## Install dependencies
 
+For repository use:
+
+```powershell
+npm install --save-dev content-contract-engine
+npx content-contract init . --source "docs/**/*.{md,mdx}"
+npx content-contract verify
+```
+
+For contribution work from a clone:
+
 ```powershell
 npm ci
 ```
 
-The package remains marked `private` until its first npm publication. This does
-not limit local builds, tests, package inspection, or installation from a local
-directory.
+The library is ESM-only.
 
 ## Quality checks
 
@@ -61,7 +69,8 @@ node dist/bin.js render --config .\scratch\content-contract.config.json
 ```
 
 The initialized project includes a schema, fact catalog, two linked documents,
-and a separate render directory.
+and a separate render directory. Use `--source` to configure existing content
+without creating sample source documents.
 
 ## Supported platforms
 
